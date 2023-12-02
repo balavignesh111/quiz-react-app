@@ -1,8 +1,8 @@
 import Answer from "./answer.component";
-const AnswerBox = ({answerList}) => {
+const AnswerBox = ({answerList, userChoice, setUserChoice, updateDbHandler, dbList, index}) => {
   return (
-    answerList.map((ele,index)=>{
-    return <Answer key={index} options={ele} index={index}/>
+    answerList.map((ele,listIndex)=>{
+    return <Answer key={listIndex} options={ele} listIndex={listIndex} userChoice={userChoice} setUserChoice={setUserChoice} updateDbHandler = {updateDbHandler} dbList = {dbList} index={index}/>
   }))
 }
 

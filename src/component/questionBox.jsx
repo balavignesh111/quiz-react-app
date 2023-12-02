@@ -8,5 +8,5 @@ const QuestionBox = ({ index, qtn }) => {
     </div>
   );
 }
- 
+
 export default QuestionBox;
