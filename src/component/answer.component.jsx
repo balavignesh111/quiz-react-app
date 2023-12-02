@@ -1,4 +1,4 @@
-const Answer = ({options,listIndex,userChoice,setUserChoice, updateDbHandler, dbList, index}) => {
+const Answer = ({options,listIndex,setUserChoice, updateDbHandler, dbList, index}) => {
   // function
   const updateInput = (e) =>{
     setUserChoice(()=>(e.target.value));

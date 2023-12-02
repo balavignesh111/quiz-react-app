@@ -1,16 +1,9 @@
 import CircledQuestion from "./circledQuestion";
-const QuestionSideBar = ({index, db, questionCircleHandler}) => {
-  // submit quiz
-  const submitQuiz = () =>{
-    let res = db.reduce((acc,ele)=>{
-      if(ele.selectedOption === ele.correct_answer){
-        acc += 1;
-      }
-      return acc;
-    },0)
-    alert('your score is ' + res);
+const QuestionSideBar = ({index, db, questionCircleHandler, submitQuizHandler, submittedHandler}) => {
+  const submitBtnHandler = ()=>{
+    submitQuizHandler();
+    submittedHandler(()=>(true));
   }
-
   return ( 
     <div className="w-[25%] p-[2rem] shadow-md flex flex-col gap-[2.5rem] justify-between">
       <div className="w-[100%] flex flex-col gap-[1.5rem] ">
@@ -20,12 +13,13 @@ const QuestionSideBar = ({index, db, questionCircleHandler}) => {
         </div>
         <div className="w-[100%] flex flex-wrap justify-around gap-[2rem]">
           {db.map((ele,ind)=>{
-            return <CircledQuestion key = {ind} ind = {ind} index = {index} questionCircleHandler = {questionCircleHandler}/>
+            let bgColor = (ele.selectedOption === undefined ? "bg-gray-400 border-gray-400" : "bg-cyan-600 border-cyan-600" );
+            return <CircledQuestion key = {ind} ind = {ind} index = {index} questionCircleHandler = {questionCircleHandler} bgColor={bgColor}/>
           })}
         </div>
       </div>
       <div className="w-[100%]">
-        <button className="text-white bg-green-500 w-[100%] font-bold text-[1.1rem] py-2 px-8 rounded" onClick={submitQuiz}>Submit Quiz</button>  
+        <button className="text-white bg-green-500 w-[100%] font-bold text-[1.1rem] py-2 px-8 rounded" onClick={submitBtnHandler}>Submit Quiz</button>  
       </div>
       
     </div>

@@ -1,5 +1,6 @@
 import QuizBox from './component/quizBox'
 import QuestionSideBar from './component/questionSideBox'
+import Congratulation from './component/congrats.component';
 import { useEffect, useState } from 'react'
 import data from './constants';
 
@@ -16,8 +17,8 @@ function App() {
     return list;
   }
 
-  // useState hooks for updating questions and answers
-  const [db, setDb] = useState(()=>{
+  // modifies the data structure
+  const modifiedData = ()=>{
     return data.map((ele,ind)=>{
       const obj = {
         ...ele
@@ -26,13 +27,19 @@ function App() {
       obj["answerList"] = answerList(ind);
       return obj;
     })
+  }
+
+  // useState hooks for updating questions and answers
+  const [db, setDb] = useState(()=>{
+    return modifiedData();
   });
   console.log(db)
   const [index, setIndex] = useState(0);
   const [qtn, SetQtn] = useState(db[index].question);
   const [userChoice,setUserChoice]= useState('');
+  const [score,setScore] = useState(0);
+  const [isSubmitted,SetIsSubmitted] = useState(false);
 
-console.log(userChoice)
   // next btn
   const nextBtn = ()=>{
     if(index === db.length - 1){
@@ -60,7 +67,6 @@ console.log(userChoice)
   }
 
   useEffect(()=>{
-    // answerHandler(index);
     qtnHandler(index);
   },[index])
 
@@ -79,6 +85,27 @@ console.log(userChoice)
     console.log(db)
   }
 
+  // retake quiz function
+  const init = ()=>{
+    setScore(0);
+    SetIsSubmitted(()=>(false));
+    setIndex(0);
+    setDb(modifiedData());
+  }
+
+  // score
+  const submitQuiz = () =>{
+    let res = db.reduce((acc,ele)=>{
+      if(ele.selectedOption === ele.correct_answer){
+        acc += 1;
+      }
+      return acc;
+    },0)
+    setScore(()=>res);
+    return res;
+  }
+  console.log(score)
+
 
   return (
     <div className='w-[100%] min-h-full p-4'>
@@ -90,13 +117,18 @@ console.log(userChoice)
           nextBtnHandler = {nextBtn}
           prevBtnHandler = {prevBtn} 
           qtn = {qtn}
-          userChoice = {userChoice}
           setUserChoice = {setUserChoice}
           updateDb = {updateDb}
           dbList = {db}
         />
-        <QuestionSideBar index = {index} db = {db} questionCircleHandler = {setIndex}></QuestionSideBar>
+        <QuestionSideBar index = {index} db = {db} questionCircleHandler = {setIndex} submitQuizHandler = {submitQuiz} submittedHandler = {SetIsSubmitted}></QuestionSideBar>
       </div>
+      {
+        isSubmitted ? 
+          <Congratulation 
+            retryHandler = {init} 
+            score = {score}
+          /> : ''}
     </div>
   )
 }
