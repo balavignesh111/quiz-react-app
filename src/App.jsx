@@ -39,6 +39,7 @@ function App() {
   const [userChoice,setUserChoice]= useState('');
   const [score,setScore] = useState(0);
   const [isSubmitted,SetIsSubmitted] = useState(false);
+  const [highScore,setHighScore] = useState(0);
 
   // next btn
   const nextBtn = ()=>{
@@ -87,6 +88,7 @@ function App() {
 
   // retake quiz function
   const init = ()=>{
+    setHighScore(score);
     setScore(0);
     SetIsSubmitted(()=>(false));
     setIndex(0);
@@ -128,6 +130,7 @@ function App() {
           <Congratulation 
             retryHandler = {init} 
             score = {score}
+            highScore = {highScore}
           /> : ''}
     </div>
   )
