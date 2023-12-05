@@ -2,7 +2,7 @@ import QuizBox from './component/quizBox'
 import QuestionSideBar from './component/questionSideBox'
 import Congratulation from './component/congrats.component';
 import { useEffect, useState } from 'react'
-import data from './constants';
+// import data from './constants';
 
 function App() {
   // functions
@@ -12,14 +12,14 @@ function App() {
   }
   // shuffled answer list
   const answerList = (index)=>{
-    let list = [...data[index].incorrect_answers]
-    list.splice(getRandomNo(),0,data[index].correct_answer);
+    let list = [...db[index]?.incorrect_answers]
+    list.splice(getRandomNo(),0,db[index]?.correct_answer);
     return list;
   }
 
   // modifies the data structure
-  const modifiedData = ()=>{
-    return data.map((ele,ind)=>{
+  const modifiedData = (data)=>{
+    return data?.map((ele,ind)=>{
       const obj = {
         ...ele
       }
@@ -28,18 +28,35 @@ function App() {
       return obj;
     })
   }
-
+  
+  const url = "https://opentdb.com/api.php?amount=10";
   // useState hooks for updating questions and answers
-  const [db, setDb] = useState(()=>{
-    return modifiedData();
-  });
-  console.log(db)
+  const [db, setDb] = useState([]);
+  // console.log(db)
   const [index, setIndex] = useState(0);
-  const [qtn, SetQtn] = useState(db[index].question);
+  const [qtn, setQtn] = useState(0);
+  const [ansList,setAnsList] = useState([]);
   const [userChoice,setUserChoice]= useState('');
   const [score,setScore] = useState(0);
   const [isSubmitted,SetIsSubmitted] = useState(false);
   const [highScore,setHighScore] = useState(0);
+
+  // use effect for fetching api
+  useEffect(()=>{
+    const fetchData = async ()=>{
+      const resp = await fetch(url);
+      const {results} = await resp.json();
+      setDb(modifiedData(results))
+    }
+    fetchData();  
+  },[])
+  console.log(db)
+
+  useEffect(()=>{
+    setQtn(db[index]?.question);
+    setAnsList(db[index]?.answerList);
+    console.log(db)
+  },[db])
 
   // next btn
   const nextBtn = ()=>{
@@ -62,13 +79,10 @@ function App() {
   }
 
 
-  // qtn useState
-  const qtnHandler = (index) =>{
-    SetQtn(()=>(db[index].question))
-  }
 
   useEffect(()=>{
-    qtnHandler(index);
+    setQtn(()=>(db[index]?.question))
+    setAnsList(db[index]?.answerList);
   },[index])
 
   // func to update db
@@ -106,7 +120,7 @@ function App() {
     setScore(()=>res);
     return res;
   }
-  console.log(score)
+  
 
 
   return (
@@ -114,7 +128,7 @@ function App() {
       <h1 className='text-center font-semibold text-[2rem]'>Quiz Title</h1>
       <div className='w-[100%] flex flex-row justify-around'>
         <QuizBox 
-          answerList = {db[index].answerList}
+          answerList = {ansList}
           index = {index} 
           nextBtnHandler = {nextBtn}
           prevBtnHandler = {prevBtn} 

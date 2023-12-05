@@ -11,8 +11,8 @@ const QuestionSideBar = ({index, db, questionCircleHandler, submitQuizHandler, s
           <p className="text-[1.2rem]">Question {index + 1}/{db.length}</p>
           <p className="text-[1.2rem]">Instruction</p>
         </div>
-        <div className="w-[100%] flex flex-wrap justify-around gap-[2rem]">
-          {db.map((ele,ind)=>{
+        <div className="w-[100%] flex flex-wrap justify-start gap-[2rem] items-start">
+          {db.length>0 && db.map((ele,ind)=>{
             let bgColor = (ele.selectedOption === undefined ? "bg-gray-400 border-gray-400" : "bg-cyan-600 border-cyan-600" );
             return <CircledQuestion key = {ind} ind = {ind} index = {index} questionCircleHandler = {questionCircleHandler} bgColor={bgColor}/>
           })}
