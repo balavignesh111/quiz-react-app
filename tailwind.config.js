@@ -7,8 +7,9 @@ export default {
   theme: {
     extend: {
       backgroundImage:{
-        'awardImg': "url('./src/assets/award_1.svg')"
-      }
+        'awardImg': "url('./src/assets/award_1.svg')",
+        'gkLogo':"url('./src/assets/gk-logo.jpeg')"
+      },
     },
   },
   plugins: [],

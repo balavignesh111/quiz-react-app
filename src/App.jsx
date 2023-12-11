@@ -4,6 +4,7 @@ import Congratulation from './component/congrats.component';
 import { useEffect, useState } from 'react'
 import Login from './component/login.component';
 import Register from './component/register.component';
+import Home from './component/home/home.component';
 // import data from './constants';
 
 function App() {
@@ -149,7 +150,8 @@ function App() {
             highScore = {highScore}
           /> : ''} */}
       {/* <Login/> */}
-      <Register/>
+      {/* <Register/> */}
+      <Home/>
     </div>
   )
 }
