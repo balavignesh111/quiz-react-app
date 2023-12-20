@@ -8,7 +8,7 @@ export default {
     extend: {
       backgroundImage:{
         'awardImg': "url('./src/assets/award_1.svg')",
-        'gkLogo':"url('./src/assets/gk-logo.jpeg')"
+        'gkLogo':"url('../src/assets/gk-logo.jpeg')"
       },
     },
   },

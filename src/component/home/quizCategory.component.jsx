@@ -9,15 +9,35 @@ import { FaCarSide } from "react-icons/fa";
 import { GiTigerHead } from "react-icons/gi";
 import { TbMathSymbols } from "react-icons/tb";
 
+import { useState} from 'react'
+
+import {QuizStartQuestion} from "./quizStartQuestion.component";
+
 const QuizCategory = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openQuizStart = () => (setIsOpen(true))
+  const closeQuizStart = () => (setIsOpen(false))
+
+  // popup
+  const [totalQuestion, SetTotalQuestion] = useState('10');
+  const [difficulty,SetDifficulty] = useState('');
+  // category
+  const [category,setCategory] = useState('');
+  console.log(category)
   return (
     <div className="w-full flex flex-row justify-center py-8">
       <div className="w-[45rem] flex flex-col gap-4">
           <h2 className="text-[1.25rem]">Select a category to start the quiz</h2>
           <div className="w-full flex justify-between items-center flex-wrap min-h-[20rem]">
-            <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg flex flex-col gap-2" value={"General knowledge"}>
-              <FaEarthAfrica className="text-[2rem]"/>
-              <span className="text-[0.9rem]">General knowledge</span>
+            <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg gap-2 text-[0.9rem]" 
+            value={"General knowledge"} 
+            onClick = {(event)=>{
+              openQuizStart()
+              setCategory(event.target.value);
+              }}>
+              <FaEarthAfrica className="text-[2rem] pointer-events-none"/>
+              General knowledge
             </button>
             <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg flex flex-col gap-2" value={"Books"}>
               <IoBookSharp className="text-[2rem]"/>
@@ -57,6 +77,11 @@ const QuizCategory = () => {
             </button>
           </div>
       </div>
+      <QuizStartQuestion 
+        isOpen={isOpen} 
+        closeQuiz = {closeQuizStart} 
+        SetTotalQuestion={SetTotalQuestion}
+        SetDifficulty={SetDifficulty}/>
     </div>
     );
 }
