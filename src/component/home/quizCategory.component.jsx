@@ -31,7 +31,7 @@ const QuizCategory = () => {
           <h2 className="text-[1.25rem]">Select a category to start the quiz</h2>
           <div className="w-full flex justify-between items-center flex-wrap min-h-[20rem]">
             <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg gap-2 text-[0.9rem]" 
-            value={"General knowledge"} 
+            value={"general knowledge"} 
             onClick = {(event)=>{
               openQuizStart()
               setCategory(event.target.value);
@@ -39,7 +39,12 @@ const QuizCategory = () => {
               <FaEarthAfrica className="text-[2rem] pointer-events-none"/>
               General knowledge
             </button>
-            <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg flex flex-col gap-2" value={"Books"}>
+            <button className="w-[8rem] h-[7rem] p-2 bg-gray-700 flex flex-col justify-center items-center text-[#d6d8da] rounded-lg flex flex-col gap-2" value={"Books"}
+            onClick = {(event)=>{
+              openQuizStart()
+              setCategory(event.target.value);
+              }}
+            >
               <IoBookSharp className="text-[2rem]"/>
               <span className="text-[0.9rem]">Books</span>
             </button>
@@ -81,7 +86,8 @@ const QuizCategory = () => {
         isOpen={isOpen} 
         closeQuiz = {closeQuizStart} 
         SetTotalQuestion={SetTotalQuestion}
-        SetDifficulty={SetDifficulty}/>
+        SetDifficulty={SetDifficulty}
+        category = {category}/>
     </div>
     );
 }

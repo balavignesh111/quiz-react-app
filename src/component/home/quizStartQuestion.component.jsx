@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
-const QuizStartQuestion = ({isOpen,closeQuiz,SetTotalQuestion,SetDifficulty}) => {
+import { getDataFromDb} from "../../utils/firebase"
+
+const QuizStartQuestion = ({isOpen,closeQuiz,SetTotalQuestion,SetDifficulty,category}) => {
+
+  const quizHandler = async()=>{
+    const data = await getDataFromDb(category);
+    console.log(data)
+  }
+
   return ( 
     <div className={`absolute w-full min-h-full top-0 left-0 bg-[rgb(0,0,0,0.7)] flex flex-col justify-center items-center ${isOpen ? "" : "hidden"}`}>
         <div className="w-[30rem] h-[23rem] bg-white rounded-lg">
@@ -34,7 +42,9 @@ const QuizStartQuestion = ({isOpen,closeQuiz,SetTotalQuestion,SetDifficulty}) =>
                 <option value="Hard">Hard</option>
               </select>
             </div>
-            <button className="px-[0.75rem] py-[0.5rem] bg-slate-700 self-center text-[#d6d8da] rounded-md">Start Quiz</button>
+            <button 
+              className="px-[0.75rem] py-[0.5rem] bg-slate-700 self-center text-[#d6d8da] rounded-md"
+              onClick={quizHandler}>Start Quiz</button>
           </div>
         </div>
       </div>

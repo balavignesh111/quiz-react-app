@@ -5,53 +5,83 @@ import { FcGoogle } from "react-icons/fc";
 import { 
   signInWithGooglePopup,
   createUserDocumentFromAuth,
-  signInAuthUserWithEmailAndPassword
+  signInAuthUserWithEmailAndPassword,
+  getUserDetails
 } from "../utils/firebase";
 import { useUser } from "./context/context";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
+  const {formFields, setFormFields, setUser} = useUser();
+  
+  const {email, password} = formFields;
+
+  // usestate
+  const [isValidEmail,setIsValidEmail] = useState(true);
+  const [isValidPassword,setIsValidPassword] = useState(true);
+  const [emailCnt, setEmailCnt] = useState("");
+  const [passwordCnt, setPasswordCnt] = useState("");
+
   const navigation = useNavigate();
   const signInWithGoogle = async ()=>{
     const { user } = await signInWithGooglePopup();
-    console.log(user.emailVerified);
+    console.log(user)
+    createUserDocumentFromAuth(user);
+    setUser(user.email,user.displayName);
     navigate(user); 
   }
 
+
   const navigate = (user) => {
-    if(user && user.emailVerified === true){
+    if(user){
       navigation('/dashboard/home');
     }else{
       alert('user mismatch')
     }
   }
-  const {formFields, setFormFields, setUser} = useUser();
-  console.log(useUser())
-  const {displayName, email, password, confirmPassword} = formFields;
+
+  const validation = ()=>{
+    if(!email){
+      setIsValidEmail(false);
+      setEmailCnt("Email cannot be empty")
+    }else if(email){
+      (email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) ? (setIsValidEmail(true),setEmailCnt("")) : (setIsValidEmail(false),setEmailCnt("Invalid Email"));
+    }
+
+    if(!password){
+      setIsValidPassword(false);
+      setPasswordCnt("Password cannot be empty");
+    }else{
+      setIsValidPassword(true);
+      setPasswordCnt("");
+    }
+  }
 
   const submitHandler = async (e) =>{
     // e.preventDefault();
     console.log("hit");
-    if(email && password){
+    validation();
+    if(isValidEmail && isValidPassword){
       try{
         const { user } = await signInAuthUserWithEmailAndPassword(
           email,
           password
         )
-        console.log({user});
-        setFormFields({email: "", password: "", confirmPassword: ""});
+        user.displayName = await getUserDetails(user.uid);
+        setFormFields({email: "", password: ""});
 
         if(user){
           setUser(user.email, user.displayName);
-          console.log(user.email);
-          console.log(user.displayName);
+          navigate(user);
         }
       }catch (err){
-        console.log("Error occured while login", err.message);
+        console.log("Error occurred while login", err);
         console.log(err.code);
         if(err.code === "auth/invalid-credential"){
-          alert('Invalid Credentials')
+          alert('Invalid Credentials');
         }
+        setFormFields({email: "", password: ""});
       }
     }
   }
@@ -59,6 +89,10 @@ const Login = () => {
   const changeHandler = (e) =>{
     const { name, value } = e.target;
     setFormFields({...formFields,[name] : value})
+    setEmailCnt("")
+    setPasswordCnt("");
+    setIsValidEmail(false);
+    setIsValidPassword(false);
   }
 
   return ( 
@@ -76,9 +110,11 @@ const Login = () => {
               type="email" 
               id="email" 
               name = "email"
+              value = {email}
               className="pl-[2.25rem] p-[0.5rem] w-full rounded-md border-2 border-black" 
               onChange={changeHandler}
               placeholder="Enter your Email"></input>
+            <div className={"text-red-700 pl-4" + (isValidEmail ? "hidden" : "")}>{emailCnt}</div>
           </div>
         </div>
       </div>
@@ -93,8 +129,10 @@ const Login = () => {
             className="pl-[2.25rem] p-[0.5rem] w-full rounded-md border-2 border-black" 
             id="password" 
             name = "password"
+            value = {password}
             onChange={changeHandler}
             placeholder="Enter Password"></input>
+            <div className={"text-red-700 pl-4" + (isValidPassword ? "hidden" : "")}>{passwordCnt}</div>
         </div>
         
       </div>
@@ -116,7 +154,7 @@ const Login = () => {
       </div>
       <div className="">
         <p className="">
-          New User? <a href="#">Register</a>
+          New User? <NavLink to="/register">Register</NavLink>
         </p>
       </div>
     </div>

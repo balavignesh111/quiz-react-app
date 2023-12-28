@@ -1,11 +1,22 @@
 import { RiAccountPinCircleLine, RiAccountCircleLine } from "react-icons/ri";
 import { VscSignOut } from "react-icons/vsc";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate} from "react-router-dom";
 import { useState} from "react";
+import { useUser } from "../context/context"
+import { signOutAuthUser} from "../../utils/firebase/index"
 
 const Navbar = () => {
+  const {userEmail, displayName} = useUser();
   const [isOpen, setIsOpen] = useState(false);
+  const navigation = useNavigate();
+
+  // signOut
+  const signOut = ()=>{
+    if(!userEmail || !displayName){ return;}
+    signOutAuthUser();
+    navigation("/");
+  }
   return ( 
     <div className="w-full h-[3.5rem] bg-slate-700 p-2 flex flex-row justify-between relative">
         <div className="w-[25rem] flex justify-around items-center">
@@ -21,7 +32,7 @@ const Navbar = () => {
           </div>
         </div>
         {/* profile signout */}
-        <div className={`w-[16rem] bg-[#f3f3f3] absolute top-[3.5rem] right-9 rounded-lg p-4 flex flex-col gap-4 shadow-lg ${isOpen ? "" : "hidden"}`}>
+        <div className={`w-[20rem] bg-[#f3f3f3] absolute top-[3.5rem] right-9 rounded-lg p-4 flex flex-col gap-4 shadow-lg ${isOpen ? "" : "hidden"}`}>
           <button className="w-[2rem] h-[2rem] text-[2rem] self-end absolute top-[-3rem] right-1 bg-[#f3f3f3] rounded-lg">
             <IoMdCloseCircleOutline onClick={()=>(setIsOpen(false))}/>  
           </button>
@@ -30,14 +41,14 @@ const Navbar = () => {
               <RiAccountCircleLine className="text-[2rem]"/>
             </div>
             <div className="w-full">
-              <p className="font-extrabold">Username</p>
-              <p className="">Username@gmail.com</p>
+              <p className="font-extrabold">{displayName}</p>
+              <p className="">{ userEmail }</p>
             </div>
           </div>
-          <div className="w-full flex flex-row justify-around items-center pb-2 gap-4 border-b-[1px] border-black">
-            <button className="w-[2rem] h-[2rem] bg-white rounded-[50%] flex justify-center items-center">
+          <div className="w-full flex flex-row justify-around items-center pb-2 gap-4 border-b-[1px] border-black cursor-pointer" onClick={signOut}>
+            <div className="w-[2rem] h-[2rem] bg-white rounded-[50%] flex justify-center items-center">
               <VscSignOut className="text-[2rem]"/>
-            </button>
+            </div>
             <p className="w-full">Sign out</p>
           </div>
         </div>

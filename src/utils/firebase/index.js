@@ -1,8 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import {GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup} from "firebase/auth";
+import {GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup,signOut} from "firebase/auth";
+
 import {getFirestore, doc, getDoc,setDoc } from "firebase/firestore";
+
+import {gk} from "../../constants/data"
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDDLLljXBHYAHqybiI-D1KA0O3cWvZQm60",
@@ -16,7 +20,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const quizApp = initializeApp(firebaseConfig);
 
-// authetication
+// authetication - ( getAuth will activate the authentication )
 const quizAuth = getAuth(quizApp);
 
 // signIn with google
@@ -48,7 +52,9 @@ const quizDb = getFirestore(quizApp);
 const createUserDocumentFromAuth = async(userAuth,additionalInfo = {}) => {
   if(!userAuth) return;
   const userDocRef = doc(quizDb,"users",userAuth.uid);
+  console.log(userDocRef);
   const userSnapShot = await getDoc(userDocRef);
+  console.log(userSnapShot);
 
   if(!userSnapShot.exists()){
     const {displayName, email} = userAuth;
@@ -67,10 +73,49 @@ const createUserDocumentFromAuth = async(userAuth,additionalInfo = {}) => {
   return userDocRef;
 }
 
+// to get user details----
+const getUserDetails = async(userId)=>{
+  const docRef = doc(quizDb,"users",userId);
+  const resp = await getDoc(docRef);
+  console.log(resp._document.data.value.mapValue.fields.displayName.stringValue);
+  return (resp._document.data.value.mapValue.fields.displayName.stringValue)
+}
+
+// sign out user
+const signOutAuthUser = async ()=>{
+  const resp = await signOut(quizAuth);
+  console.log(resp);
+}
+
+// to import question in db
+const sendDataToDb = async ()=>{
+  const docRef = doc(quizDb,"quizData","books");
+  console.log(docRef)
+  const resp = await setDoc(docRef,{gk});
+  console.log(resp);
+}
+
+// sendDataToDb();
+
+const getDataFromDb = async(category)=>{
+  console.log(category)
+  const docRef = doc(quizDb,"quizData",category);
+  try{
+    const resp = await getDoc(docRef);
+    console.log(resp);
+    return resp;
+  }catch(error){
+    console.log(error.message);
+  }
+}
+
 export { 
   signInWithGooglePopup,
   createAuthUserWithEmailAndPassword,
   signInAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  getUserDetails,
+  signOutAuthUser,
+  getDataFromDb
 }
