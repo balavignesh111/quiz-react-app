@@ -1,11 +1,12 @@
-const Congratulation = ({retryHandler, score, highScore}) => {
+const Congratulation = ({retryHandler, score}) => {
   console.log(score)
-  console.log(highScore)
   const retry = ()=>{
     retryHandler();
   }
-  let thankCnt = ((score > highScore && score !== 0) ? `kudos! You have reached a milestone` : `Thank you for Participating in our quiz`);
-  let scoreCnt = ((score > highScore && score !== 0) ? `Your new high score is -` : `Your score is -`);
+  // let thankCnt = ((score > highScore && score !== 0) ? `kudos! You have reached a milestone` : `Thank you for Participating in our quiz`);
+  // let scoreCnt = ((score > highScore && score !== 0) ? `Your new high score is -` : `Your score is -`);
+  let thankCnt = `Thank you for Participating in our quiz`;
+  let scoreCnt = `Your score is -`;
   return (
     <div className="w-full h-full bg-[rgb(0,0,0,0.4)] absolute top-0 left-0">
       <div className="w-[100%] h-[100%] p-[2rem] flex flex-col items-center justify-center">

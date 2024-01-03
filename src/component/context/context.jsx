@@ -18,6 +18,16 @@ export const UserProvider = ({children}) => {
     setDisplayName(name);
   }
 
+  const [category,setCategory] = useState("");
+  const [totalQuestion, SetTotalQuestion] = useState(10);
+  const [difficulty,SetDifficulty] = useState("any difficulty");
+  const [index, setIndex] = useState(0);
+  const [score,setScore] = useState(0);
+
+  // database - static data
+  const [quizData,setQuizData] = useState([])
+
+
   return (
     <UserContext.Provider
       value={{
@@ -25,7 +35,19 @@ export const UserProvider = ({children}) => {
         displayName,
         setUser,
         formFields,
-        setFormFields
+        setFormFields,
+        totalQuestion,
+        SetTotalQuestion,
+        difficulty,
+        SetDifficulty,
+        category,
+        setCategory,
+        quizData,
+        setQuizData,
+        index,
+        setIndex,
+        score,
+        setScore
       }}
     >
       {children}

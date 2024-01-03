@@ -5,7 +5,7 @@ import {GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithE
 
 import {getFirestore, doc, getDoc,setDoc } from "firebase/firestore";
 
-import {gk} from "../../constants/data"
+import data from "../../constants/index"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -89,9 +89,9 @@ const signOutAuthUser = async ()=>{
 
 // to import question in db
 const sendDataToDb = async ()=>{
-  const docRef = doc(quizDb,"quizData","books");
+  const docRef = doc(quizDb,"quizData","General Knowledge");
   console.log(docRef)
-  const resp = await setDoc(docRef,{gk});
+  const resp = await setDoc(docRef,{data});
   console.log(resp);
 }
 
@@ -109,6 +109,54 @@ const getDataFromDb = async(category)=>{
   }
 }
 
+// creating previous attempt collections in db
+const createPreviousAttemptCollection = async(data,email,category,score,totalQuestion,difficulty)=>{
+  let list = [];
+  const docRef = doc(quizDb,"previousAttempt",email);
+  // get doc
+  const result = await getDoc(docRef);
+  const resData = result.data();
+  console.log(resData[category])
+  if(resData.hasOwnProperty(category)){
+    list = [...(resData[category])];
+  }else if(!resData.hasOwnProperty(category)){
+    list = [resData];
+  }
+  // set doc
+  const wrongAnswer = totalQuestion - score;
+  try{
+    const quizData = [
+      ...list,
+      {
+        data,
+        email,
+        category,
+        score,
+        totalQuestion,
+        difficulty,
+        wrongAnswer,
+        correctAnswer : score
+    }]
+    console.log(quizData)
+    console.log({[category] : quizData})
+    await setDoc(docRef,{
+      [category] : quizData
+    })
+  }catch(error){
+    console.log("Error in sending Data to db",error.message);
+    console.log(error);
+  }
+}
+
+const getPreviousAttemptDetails = async(email)=>{
+  const docRef = doc(quizDb,"previousAttempt",email);
+  try{
+    const res = await getDoc(docRef);
+    return res;
+  }catch(error){
+    console.log("error in fetching data",error.message)
+  }
+}
 export { 
   signInWithGooglePopup,
   createAuthUserWithEmailAndPassword,
@@ -117,5 +165,7 @@ export {
   signInWithEmailAndPassword,
   getUserDetails,
   signOutAuthUser,
-  getDataFromDb
+  getDataFromDb,
+  createPreviousAttemptCollection,
+  getPreviousAttemptDetails
 }

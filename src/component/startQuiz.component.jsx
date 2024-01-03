@@ -2,54 +2,33 @@ import QuizBox from './quizBox'
 import QuestionSideBar from './questionSideBox'
 import Congratulation from './congrats.component';
 import { useEffect, useState } from 'react'
+import { useUser } from "../component/context/context"
+// import data from '../constants';
 
-import data from '../constants';
+import { createPreviousAttemptCollection, getPreviousAttemptDetails} from '../utils/firebase';
 
 const StartQuiz = () => {
-
-  // functions
-  // to generate random number
-  const getRandomNo = ()=>{
-    return Math.trunc(Math.random()*4);
-  }
-  // shuffled answer list
-  const answerList = (index)=>{
-    let list = [...data[index]?.incorrect_answers]
-    list.splice(getRandomNo(),0,data[index]?.correct_answer);
-    return list;
-  }
-
-  // modifies the data structure
-  const modifiedData = (datas)=>{
-    return datas?.map((ele,ind)=>{
-      const obj = {
-        ...ele
-      }
-      obj["selectedOption"] = undefined;
-      obj["answerList"] = answerList(ind);
-      return obj;
-    })
-  }
-  
-  const url = "https://opentdb.com/api.php?amount=10";
+  const {quizData,index,setIndex,userEmail,totalQuestion,score,setScore,category,difficulty} = useUser();
+  console.log(userEmail)
   // useState hooks for updating questions and answers
-  const [db, setDb] = useState((modifiedData(data)))
-  //   });
-  // console.log(db)
-  const [index, setIndex] = useState(0);
-  const [qtn, setQtn] = useState(0);
-  const [ansList,setAnsList] = useState([]);
-  const [userChoice,setUserChoice]= useState('');
-  const [score,setScore] = useState(0);
+  const [db, setDb] = useState(((quizData)))
   const [isSubmitted,SetIsSubmitted] = useState(false);
-  const [highScore,setHighScore] = useState(0);
+
+  // check for existing data in db
+  let previousList = [];
+  (async () => {
+    const res = await getPreviousAttemptDetails(userEmail);
+    console.log(res);
+    // previousList = [...res._document.data.value.mapValue.fields]
+    // console.log(previousList);
+  })();
+
 
   // next btn
   const nextBtn = ()=>{
     if(index === db.length - 1){
       setIndex(()=> 0);
     }else if(index > 0 || index < db.length-1){
-      setUserChoice(()=>(''));
       setIndex((index)=> (index += 1))
     }
   }
@@ -66,12 +45,7 @@ const StartQuiz = () => {
 
 
 
-  useEffect(()=>{
-    setQtn(()=>(db[index]?.question))
-    setAnsList(db[index]?.answerList);
-  },[index])
-
-  // func to update db
+  // func to update db -> which updates the user selected value
   const updateDb = (val,index,db)=>{
     setDb(()=>{
       return (db.map((ele,ind)=>{
@@ -88,7 +62,6 @@ const StartQuiz = () => {
 
   // retake quiz function
   const init = ()=>{
-    setHighScore(score);
     setScore(0);
     SetIsSubmitted(()=>(false));
     setIndex(0);
@@ -97,14 +70,24 @@ const StartQuiz = () => {
 
   // score
   const submitQuiz = () =>{
-    let res = db.reduce((acc,ele)=>{
+    // return score
+    let res = quizData.reduce((acc,ele)=>{
       if(ele.selectedOption === ele.correct_answer){
         acc += 1;
       }
       return acc;
     },0)
     setScore(()=>res);
-    return res;
+
+    // sending data to db
+    try{
+      console.log("try block")
+      createPreviousAttemptCollection(quizData,userEmail,category,res,totalQuestion,difficulty,)
+      console.log("hit");
+    }catch(error){
+      console.log("error occurred in sending data",error);
+      console.log(error.message);
+    }
   }
   
 
@@ -112,28 +95,19 @@ const StartQuiz = () => {
     <div className='w-[100%] min-h-full'>
       <h1 className='text-center font-semibold text-[2rem]'>Quiz Title</h1>
       <div className='w-[100%] flex flex-row justify-around'>
-        <QuizBox 
-          answerList = {ansList}
-          index = {index} 
+        <QuizBox  
           nextBtnHandler = {nextBtn}
           prevBtnHandler = {prevBtn} 
-          qtn = {qtn}
-          setUserChoice = {setUserChoice}
           updateDb = {updateDb}
-          dbList = {db}
         />
-        <QuestionSideBar index = {index} db = {db} questionCircleHandler = {setIndex} submitQuizHandler = {submitQuiz} submittedHandler = {SetIsSubmitted}></QuestionSideBar>
+        <QuestionSideBar questionCircleHandler = {setIndex} submitQuizHandler = {submitQuiz} submittedHandler = {SetIsSubmitted}></QuestionSideBar>
       </div>
       {
         isSubmitted ? 
           <Congratulation 
             retryHandler = {init} 
             score = {score}
-            highScore = {highScore}
           /> : ''}
-      {/* <Login/> */}
-      {/* <Register/> */}
-      {/* <Home/> */}
     </div>
   );
 }
